@@ -240,8 +240,8 @@ describe("scanDomain", () => {
     expect(scanDomain(blocklist!, bloomFilter!, "https://google.com")).toBe(
       "NONE"
     );
-    expect(
-      scanDomain(blocklist!, bloomFilter!, "https://-magiceden.io")
-    ).toBe("BLOCK");
+    expect(scanDomain(blocklist!, bloomFilter!, "https://-magiceden.io")).toBe(
+      "BLOCK"
+    );
   });
 });
