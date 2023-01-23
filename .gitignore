@@ -1,5 +1,7 @@
 dist
 
+.env
+
 .idea
 
 # Logs
