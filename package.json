@@ -18,8 +18,8 @@
     "maintained node versions"
   ],
   "files": [
-    "./dist/**/*",
-    "./src/**/*"
+    "dist/**/*",
+    "src/**/*"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
