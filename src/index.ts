@@ -16,7 +16,7 @@ export async function fetchDomainBlocklist(
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey } }
     : {};
-  // We wrap errors with a null any downtime won't break user's browsing flow.
+  // We wrap errors with a null so any downtime won't break user's browsing flow.
   const response = await fetch(apiConfig.domainBlocklistUrl, {
     method: "POST",
     body: JSON.stringify({
@@ -28,7 +28,12 @@ export async function fetchDomainBlocklist(
   if (!response.ok) {
     return null;
   }
-  return (await response.json()) as DomainBlocklist;
+  // Catch JSON decoding errors
+  try {
+    return (await response.json()) as DomainBlocklist;
+  } catch {
+    return null;
+  }
 }
 
 // Fetch bloom filter JSON object from CDN url.
@@ -39,7 +44,12 @@ export async function fetchDomainBlocklistBloomFilter(
   if (!response.ok) {
     return null;
   }
-  return (await response.json()) as BloomFilter;
+  // Catch JSON decoding errors
+  try {
+    return (await response.json()) as BloomFilter;
+  } catch {
+    return null;
+  }
 }
 
 // Scan if url's domain is blocked by the bloom filter or is contained in the "recent domains" list.
@@ -55,7 +65,7 @@ export function scanDomain(
   // Lookup all possible subdomains.
   // E.g. for abc.cde.google.com, we'll lookup: abc.cde.google.com, cde.google.com, google.com
   // Blowfish API is responsible for not including public suffix domains to the bloom filter.
-  for (let i = 0; i < domainParts.length; i++) {
+  for (let i = 0; i < domainParts.length - 1; i++) {
     const domainToLookup = domainParts.slice(i).join(".");
     if (blocklist.recent.includes(domainToLookup)) {
       return Action.BLOCK;

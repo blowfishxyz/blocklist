@@ -109,19 +109,6 @@ describe("scanDomain", () => {
     ).toBe("BLOCK");
   });
 
-  it("should return a block action when specific subdomain is in the recent blocklist ", () => {
-    expect(
-      scanDomain(
-        {
-          bloomFilter: { url: "", hash: "" },
-          recent: ["app1.vercel.com"],
-        },
-        EMPTY_BLOOM_FILTER,
-        "https://app1.vercel.com"
-      )
-    ).toBe("BLOCK");
-  });
-
   it("should return a block action when specific subdomain is in the recent blocklist", () => {
     expect(
       scanDomain(

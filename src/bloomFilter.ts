@@ -1,11 +1,11 @@
 import sha1 from "sha1";
 import type { BloomFilter } from "./types";
 
-// This is implementation of bloom filter lookup algorithm.
+// This is an implementation of a bloom filter lookup algorithm.
 //
 // Algorithm should exactly match the one used to generate the bloom filter.
 // In order to simplify the algorithm, we're using a universal hash function
-// and generate hash from scratch for each key.
+// and generate hashes from scratch for each key.
 //
 // Bloom filter's bitVector is expected to have 8 bits in each element (u8[]).
 // First bit in vector is highest order bit in the first element.
