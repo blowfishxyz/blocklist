@@ -8,6 +8,16 @@ export const DEFAULT_BLOCKLIST_URL =
   "https://api.blowfish.xyz/v0/domains/blocklist";
 
 // Fetch blocklist JSON object from Blowfish API with link to bloom filter and recent domains.
+//
+// Blocklist should be fetched/updated in two steps.
+// 1) Fetch a blocklist JSON object from Blowfish API with a link to bloom filter and recent domains.
+// Start using recent domains immediately.
+// 2) If stored bloom filter hash does not match `bloomFilter.hash`, fetch new bloom filter
+// from `bloomFilter.url` and store it.
+//
+// `bloomFilter.url` and `bloomFilter.hash` are updated daily. `recent` is updated as soon new domains are added.
+// This optimization allows to save bandwidth and never download unchanged bloom filter, while still updating
+// recent domains every 5 minutes.
 export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
   priorityBlockLists: string[] = [],
