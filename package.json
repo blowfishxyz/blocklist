@@ -25,7 +25,6 @@
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
     "watch": "npm run build -- --watch src",
     "prepublishOnly": "npm run build",
-    "postinstall": "npm run build",
     "lint:prettier": "prettier --write \"{src,test}/**/*.{ts,tsx}\"",
     "lint:prettier:check": "prettier --check \"{src,test}/**/*.{ts,tsx}\"",
     "lint:eslint": "eslint \"{src,test}/**/*.{ts,tsx}\"",
