@@ -241,7 +241,7 @@ describe("scanDomain", () => {
       "NONE"
     );
     expect(
-      scanDomain(blocklist!, bloomFilter!, "https://cryptopunks.app")
+      scanDomain(blocklist!, bloomFilter!, "https://-magiceden.io")
     ).toBe("BLOCK");
   });
 });
