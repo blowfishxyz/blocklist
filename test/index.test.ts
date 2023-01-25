@@ -183,7 +183,7 @@ describe("scanDomain", () => {
       scanDomain(bloomFilter!, blocklist!.recent, "https://google.com")
     ).toBe("NONE");
     expect(
-      scanDomain(bloomFilter!, blocklist!.recent, "https://cryptopunks.app")
+      scanDomain(bloomFilter!, blocklist!.recent, "https://-magiceden.io")
     ).toBe("BLOCK");
   });
 });
