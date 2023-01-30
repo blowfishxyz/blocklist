@@ -1,6 +1,17 @@
 import sha1 from "sha1";
 import type { BloomFilter } from "./types";
 
+// This is an implementation of a bloom filter lookup algorithm.
+//
+// Algorithm should exactly match the one used to generate the bloom filter.
+// In order to simplify the algorithm, we're using a universal hash function
+// and generate hashes from scratch for each key.
+//
+// Bloom filter's bitVector is expected to have base64-encoded bytes,
+// which represent bits in bloom filter's bit vector.
+// First bit in vector is highest order bit of the first encoded byte.
+// See encoding implementation in
+// https://github.com/contain-rs/bit-vec/blob/d15090df70f6499da2c9770942c8d39750cb1a21/src/lib.rs#L1120.
 export function lookup(bloomFilter: BloomFilter, key: string): boolean {
   // `k` means number of hash functions used for each lookup/insert.
   for (let i = 0; i < bloomFilter.k; i++) {
