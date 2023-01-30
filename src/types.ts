@@ -9,7 +9,7 @@ export type DomainBlocklist = {
 };
 
 export type BloomFilter = {
-  bitVector: number[];
+  bitVector: string;
   k: number;
   hash: string;
   bits: number;
