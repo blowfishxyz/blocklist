@@ -7,8 +7,9 @@ import type { BloomFilter } from "./types";
 // In order to simplify the algorithm, we're using a universal hash function
 // and generate hashes from scratch for each key.
 //
-// Bloom filter's bitVector is expected to have 8 bits in each element (u8[]).
-// First bit in vector is highest order bit in the first element.
+// Bloom filter's bitVector is expected to have base64-encoded bytes,
+// which represent bits in bloom filter's bit vector.
+// First bit in vector is highest order bit of the first encoded byte.
 // See encoding implementation in
 // https://github.com/contain-rs/bit-vec/blob/d15090df70f6499da2c9770942c8d39750cb1a21/src/lib.rs#L1120.
 export function lookup(bloomFilter: BloomFilter, key: string): boolean {
@@ -20,12 +21,22 @@ export function lookup(bloomFilter: BloomFilter, key: string): boolean {
     const buffer = Buffer.from(hash).subarray(0, 4);
     // Determine bit vector position for bit that we're seeking. Each integer in bloomFilter.bitVector has 8 bits.
     const index = buffer.readUInt32BE(0) % bloomFilter.bits;
-    const byte = Math.floor(index / 8);
-    const bit = index % 8;
+    // Base64 encodes 24 bits (3 bytes) in 4 characters (4 bytes).
+    // So, we need extract a 24-bit base64-encoded sequence, which is basically a 4 character string slice.
+    const sequenceIndex = Math.floor(index / 24);
+    const sequence = Buffer.from(
+      bloomFilter.bitVector.slice(sequenceIndex * 4, sequenceIndex * 4 + 4),
+      "base64"
+    );
+    // Within this sequence, we need extract just one bit.
+    const bitInSequence = index % 24;
+    // This calculates specific byte & bit we are looking for in the 24-bit sequence.
+    const byte = Math.floor(bitInSequence / 8);
+    const bit = bitInSequence % 8;
     // Lookup bit in the bit vector using a bit mask.
     // We invert `bit` position, because `bit` is counted from highest order bit.
     // 1 << 7 selects highest order bit, 1 << 0 selects lowest order bit.
-    if ((bloomFilter.bitVector[byte] & (1 << (7 - bit))) === 0) {
+    if ((sequence[byte] & (1 << (7 - bit))) === 0) {
       // If lookup isn't successful, the item is definitely not in the bloom filter.
       return false;
     }

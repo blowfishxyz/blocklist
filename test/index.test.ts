@@ -9,7 +9,7 @@ import {
 } from "../src";
 
 const EMPTY_BLOOM_FILTER: BloomFilter = {
-  bitVector: [0],
+  bitVector: "AA",
   k: 1,
   hash: "",
   bits: 8,
@@ -136,10 +136,7 @@ describe("scanDomain", () => {
         // This bloom filter contains the domain "google.com"
         {
           hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-          bitVector: [
-            0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0,
-          ],
+          bitVector: "AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           k: 1,
           bits: 256,
           salt: "abc",
@@ -156,10 +153,7 @@ describe("scanDomain", () => {
         // This bloom filter contains the domain "google.com"
         {
           hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-          bitVector: [
-            0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, 0,
-          ],
+          bitVector: "AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
           k: 1,
           bits: 256,
           salt: "abc",

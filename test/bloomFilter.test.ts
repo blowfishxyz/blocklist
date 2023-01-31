@@ -5,10 +5,7 @@ describe("lookup", () => {
   it("should return true for a key that exists in the bloom filter", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=",
       k: 1,
       bits: 256,
       salt: "abc",
@@ -20,10 +17,7 @@ describe("lookup", () => {
   it("should return false for a key that does not exist in the bloom filter", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAA=",
       k: 1,
       bits: 256,
       salt: "abc",
@@ -35,10 +29,7 @@ describe("lookup", () => {
   it("should return true for a key that exists in the bloom filter with k=2", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 8, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAACAA=",
       k: 2,
       bits: 256,
       salt: "abc",
@@ -50,10 +41,7 @@ describe("lookup", () => {
   it("should return false for a key does not exist in the bloom filter with k=2", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 8, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAACAA=",
       k: 2,
       bits: 256,
       salt: "abc",
@@ -66,10 +54,7 @@ describe("lookup", () => {
   it("should return true for a key that exists in the bloom filter with k=2 and n=257", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 16, 0, 0, 0, 0, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAA",
       k: 2,
       bits: 257,
       salt: "abc",
@@ -81,10 +66,7 @@ describe("lookup", () => {
   it("should return false when salt is provided incorrectly", () => {
     const bloomFilter: BloomFilter = {
       hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
-      bitVector: [
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 1, 16, 0, 0, 0, 0, 0,
-      ],
+      bitVector: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABEAAAAAAA",
       k: 2,
       bits: 257,
       salt: "abcd",
