@@ -30,7 +30,7 @@ export function lookup(bloomFilter: BloomFilter, key: string): boolean {
     );
     // Within this sequence, we need extract just one bit.
     const bitInSequence = index % 24;
-    // This calculates specific byte & bit where are looking for in the 24-bit sequence.
+    // This calculates specific byte & bit we are looking for in the 24-bit sequence.
     const byte = Math.floor(bitInSequence / 8);
     const bit = bitInSequence % 8;
     // Lookup bit in the bit vector using a bit mask.
