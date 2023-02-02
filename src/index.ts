@@ -21,43 +21,47 @@ export const DEFAULT_BLOCKLIST_URL =
 export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
   priorityBlockLists: string[] = [],
-  priorityAllowLists: string[] = []
+  priorityAllowLists: string[] = [],
+  reportError: (error: unknown) => void = () => {}
 ): Promise<DomainBlocklist | null> {
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey } }
     : {};
-  // We wrap errors with a null so any downtime won't break user's browsing flow.
-  const response = await fetch(apiConfig.domainBlocklistUrl, {
-    method: "POST",
-    body: JSON.stringify({
-      priorityBlockLists,
-      priorityAllowLists,
-    }),
-    ...apiKeyConfig,
-  });
-  if (!response.ok) {
-    return null;
-  }
-  // Catch JSON decoding errors
   try {
+    // We wrap errors with a null so any downtime won't break user's browsing flow.
+    const response = await fetch(apiConfig.domainBlocklistUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        priorityBlockLists,
+        priorityAllowLists,
+      }),
+      ...apiKeyConfig,
+    });
+    if (!response.ok) {
+      return null;
+    }
+    // Catch JSON decoding errors too.
     return (await response.json()) as DomainBlocklist;
-  } catch {
+  } catch (error: unknown) {
+    reportError(error);
     return null;
   }
 }
 
 // Fetch bloom filter JSON object from CDN url.
 export async function fetchDomainBlocklistBloomFilter(
-  url: string
+  url: string,
+  reportError: (error: unknown) => void = () => {}
 ): Promise<BloomFilter | null> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    return null;
-  }
-  // Catch JSON decoding errors
   try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      return null;
+    }
+    // Catch JSON decoding errors too.
     return (await response.json()) as BloomFilter;
-  } catch {
+  } catch (error: unknown) {
+    reportError(error);
     return null;
   }
 }

@@ -31,6 +31,21 @@ describe("fetchDomainBlocklist", () => {
     expect(blocklist!.bloomFilter).toHaveProperty("hash");
     expect(blocklist!.bloomFilter.hash).not.toBe("");
   });
+
+  it("tracks thrown errors using a passed function", async () => {
+    let errors: unknown[] = [];
+    const reportError = (error: unknown) => {
+      errors.push(error);
+    }
+    const apiConfig: ApiConfig = {
+      domainBlocklistUrl: "http://2CeaMJtzCTdx8ht2.com/" // this domain does not exist
+    };
+    await fetchDomainBlocklist(
+      apiConfig, undefined, undefined, reportError
+    );
+    expect(errors.length).toBe(1);
+    expect((errors[0] as any).message).toBe("request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com");
+  });
 });
 
 describe("fetchDomainBlocklistBloomFilter", () => {
@@ -51,6 +66,20 @@ describe("fetchDomainBlocklistBloomFilter", () => {
     expect(bloomFilter).toHaveProperty("hash");
     expect(bloomFilter).toHaveProperty("bits");
     expect(bloomFilter).toHaveProperty("salt");
+  });
+
+  it("tracks thrown errors using a passed function", async () => {
+    let errors: unknown[] = [];
+    const reportError = (error: unknown) => {
+      errors.push(error);
+    }
+    await fetchDomainBlocklistBloomFilter(
+      "http://2CeaMJtzCTdx8ht2.com/", // this domain does not exist
+      reportError
+    );
+
+    expect(errors.length).toBe(1);
+    expect((errors[0] as any).message).toBe("request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com");
   });
 });
 
