@@ -33,6 +33,7 @@ describe("fetchDomainBlocklist", () => {
   });
 
   it("tracks thrown errors using a passed function", async () => {
+    // eslint-disable-next-line prefer-const
     let errors: unknown[] = [];
     const reportError = (error: unknown) => {
       errors.push(error);
@@ -42,7 +43,7 @@ describe("fetchDomainBlocklist", () => {
     };
     await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
     expect(errors.length).toBe(1);
-    expect((errors[0] as any).message).toBe(
+    expect((errors[0] as Error).message).toBe(
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
     );
   });
@@ -69,6 +70,7 @@ describe("fetchDomainBlocklistBloomFilter", () => {
   });
 
   it("tracks thrown errors using a passed function", async () => {
+    // eslint-disable-next-line prefer-const
     let errors: unknown[] = [];
     const reportError = (error: unknown) => {
       errors.push(error);
@@ -79,7 +81,7 @@ describe("fetchDomainBlocklistBloomFilter", () => {
     );
 
     expect(errors.length).toBe(1);
-    expect((errors[0] as any).message).toBe(
+    expect((errors[0] as Error).message).toBe(
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
     );
   });

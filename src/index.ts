@@ -7,6 +7,8 @@ export type { ApiConfig, Action, BloomFilter, DomainBlocklist };
 export const DEFAULT_BLOCKLIST_URL =
   "https://api.blowfish.xyz/v0/domains/blocklist";
 
+export type ErrorCallback = (error: unknown) => void;
+
 // Fetch blocklist JSON object from Blowfish API with link to bloom filter and recent domains.
 //
 // Blocklist should be fetched/updated in two steps.
@@ -22,7 +24,7 @@ export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
   priorityBlockLists: string[] = [],
   priorityAllowLists: string[] = [],
-  reportError: (error: unknown) => void = () => {}
+  reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey } }
@@ -43,7 +45,9 @@ export async function fetchDomainBlocklist(
     // Catch JSON decoding errors too.
     return (await response.json()) as DomainBlocklist;
   } catch (error: unknown) {
-    reportError(error);
+    if (reportError) {
+      reportError(error);
+    }
     return null;
   }
 }
@@ -51,7 +55,7 @@ export async function fetchDomainBlocklist(
 // Fetch bloom filter JSON object from CDN url.
 export async function fetchDomainBlocklistBloomFilter(
   url: string,
-  reportError: (error: unknown) => void = () => {}
+  reportError: ErrorCallback | undefined = undefined
 ): Promise<BloomFilter | null> {
   try {
     const response = await fetch(url);
@@ -61,7 +65,9 @@ export async function fetchDomainBlocklistBloomFilter(
     // Catch JSON decoding errors too.
     return (await response.json()) as BloomFilter;
   } catch (error: unknown) {
-    reportError(error);
+    if (reportError) {
+      reportError(error);
+    }
     return null;
   }
 }
