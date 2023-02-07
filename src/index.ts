@@ -40,6 +40,9 @@ export async function fetchDomainBlocklist(
       ...apiKeyConfig,
     });
     if (!response.ok) {
+      if (reportError) {
+        reportError(await response.text());
+      }
       return null;
     }
     // Catch JSON decoding errors too.
@@ -60,6 +63,9 @@ export async function fetchDomainBlocklistBloomFilter(
   try {
     const response = await fetch(url);
     if (!response.ok) {
+      if (reportError) {
+        reportError(await response.text());
+      }
       return null;
     }
     // Catch JSON decoding errors too.

@@ -47,6 +47,22 @@ describe("fetchDomainBlocklist", () => {
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
     );
   });
+
+  it("tracks !response.ok errors using a passed function", async () => {
+    // eslint-disable-next-line prefer-const
+    let errors: unknown[] = [];
+    const reportError = (error: unknown) => {
+      errors.push(error);
+    };
+    const apiConfig: ApiConfig = {
+      domainBlocklistUrl: "https://google.com/fdjfkdkdkfdkdf/", // this should return 404
+    };
+    await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
+    expect(errors.length).toBe(1);
+    expect(errors[0] as string).toContain(
+      "Error 404 (Not Found)"
+    );
+  });
 });
 
 describe("fetchDomainBlocklistBloomFilter", () => {
@@ -83,6 +99,22 @@ describe("fetchDomainBlocklistBloomFilter", () => {
     expect(errors.length).toBe(1);
     expect((errors[0] as Error).message).toBe(
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
+    );
+  });
+
+  it("tracks !response.ok errors using a passed function", async () => {
+    // eslint-disable-next-line prefer-const
+    let errors: unknown[] = [];
+    const reportError = (error: unknown) => {
+      errors.push(error);
+    };
+    await fetchDomainBlocklistBloomFilter(
+      "https://google.com/fdjfkdkdkfdkdf/", // this should return 404
+      reportError
+    );
+    expect(errors.length).toBe(1);
+    expect(errors[0] as string).toContain(
+      "Error 404 (Not Found)"
     );
   });
 });
