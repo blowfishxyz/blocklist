@@ -59,9 +59,7 @@ describe("fetchDomainBlocklist", () => {
     };
     await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
     expect(errors.length).toBe(1);
-    expect(errors[0] as string).toContain(
-      "Error 404 (Not Found)"
-    );
+    expect(errors[0] as string).toContain("Error 404 (Not Found)");
   });
 });
 
@@ -113,9 +111,7 @@ describe("fetchDomainBlocklistBloomFilter", () => {
       reportError
     );
     expect(errors.length).toBe(1);
-    expect(errors[0] as string).toContain(
-      "Error 404 (Not Found)"
-    );
+    expect(errors[0] as string).toContain("Error 404 (Not Found)");
   });
 });
 
