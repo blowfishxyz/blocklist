@@ -8,6 +8,8 @@ export type { ApiConfig, Action, BloomFilter, DomainBlocklist };
 export const DEFAULT_BLOCKLIST_URL =
   "https://api.blowfish.xyz/v0/domains/blocklist";
 
+export type ErrorCallback = (error: unknown) => void;
+
 // Fetch blocklist JSON object from Blowfish API with link to bloom filter and recent domains.
 //
 // Blocklist should be fetched/updated in two steps.
@@ -22,43 +24,57 @@ export const DEFAULT_BLOCKLIST_URL =
 export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
   priorityBlockLists: string[] = [],
-  priorityAllowLists: string[] = []
+  priorityAllowLists: string[] = [],
+  reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey } }
     : {};
-  // We wrap errors with a null so any downtime won't break user's browsing flow.
-  const response = await fetch(apiConfig.domainBlocklistUrl, {
-    method: "POST",
-    body: JSON.stringify({
-      priorityBlockLists,
-      priorityAllowLists,
-    }),
-    ...apiKeyConfig,
-  });
-  if (!response.ok) {
-    return null;
-  }
-  // Catch JSON decoding errors
   try {
+    // We wrap errors with a null so any downtime won't break user's browsing flow.
+    const response = await fetch(apiConfig.domainBlocklistUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        priorityBlockLists,
+        priorityAllowLists,
+      }),
+      ...apiKeyConfig,
+    });
+    if (!response.ok) {
+      if (reportError) {
+        reportError(await response.text());
+      }
+      return null;
+    }
+    // Catch JSON decoding errors too.
     return (await response.json()) as DomainBlocklist;
-  } catch {
+  } catch (error: unknown) {
+    if (reportError) {
+      reportError(error);
+    }
     return null;
   }
 }
 
 // Fetch bloom filter JSON object from CDN url.
 export async function fetchDomainBlocklistBloomFilter(
-  url: string
+  url: string,
+  reportError: ErrorCallback | undefined = undefined
 ): Promise<BloomFilter | null> {
-  const response = await fetch(url);
-  if (!response.ok) {
-    return null;
-  }
-  // Catch JSON decoding errors
   try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      if (reportError) {
+        reportError(await response.text());
+      }
+      return null;
+    }
+    // Catch JSON decoding errors too.
     return (await response.json()) as BloomFilter;
-  } catch {
+  } catch (error: unknown) {
+    if (reportError) {
+      reportError(error);
+    }
     return null;
   }
 }
