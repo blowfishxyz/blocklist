@@ -1,4 +1,5 @@
 import fetch from "cross-fetch";
+import { URL } from "whatwg-url";
 import { ApiConfig, Action, BloomFilter, DomainBlocklist } from "./types";
 import { lookup } from "./bloomFilter";
 
