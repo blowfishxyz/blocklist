@@ -118,22 +118,32 @@ describe("fetchDomainBlocklistBloomFilter", () => {
 describe("scanDomain", () => {
   it("should return a block action when domain is in the recent list", () => {
     expect(
-      scanDomain(EMPTY_BLOOM_FILTER, ["google.com"], "https://google.com")
+      scanDomain(EMPTY_BLOOM_FILTER, ["google.com"], [], "https://google.com")
     ).toBe("BLOCK");
     expect(
-      scanDomain(EMPTY_BLOOM_FILTER, ["google.com"], "https://www.google.com")
+      scanDomain(
+        EMPTY_BLOOM_FILTER,
+        ["google.com"],
+        [],
+        "https://www.google.com"
+      )
     ).toBe("BLOCK");
   });
 
   it("should return a none action when domain is not in the recent list", () => {
-    expect(scanDomain(EMPTY_BLOOM_FILTER, [], "https://www.google.com")).toBe(
-      "NONE"
-    );
+    expect(
+      scanDomain(EMPTY_BLOOM_FILTER, [], [], "https://www.google.com")
+    ).toBe("NONE");
   });
 
   it("should return a block action when lowercase domain is in the recent blocklist", () => {
     expect(
-      scanDomain(EMPTY_BLOOM_FILTER, ["google.com"], "https://wWw.GoogLE.com")
+      scanDomain(
+        EMPTY_BLOOM_FILTER,
+        ["google.com"],
+        [],
+        "https://wWw.GoogLE.com"
+      )
     ).toBe("BLOCK");
   });
 
@@ -142,6 +152,7 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["app1.vercel.com"],
+        [],
         "https://app1.vercel.com"
       )
     ).toBe("BLOCK");
@@ -152,11 +163,17 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["app1.vercel.com"],
+        [],
         "https://app2.vercel.com"
       )
     ).toBe("NONE");
     expect(
-      scanDomain(EMPTY_BLOOM_FILTER, ["app1.vercel.com"], "https://vercel.com")
+      scanDomain(
+        EMPTY_BLOOM_FILTER,
+        ["app1.vercel.com"],
+        [],
+        "https://vercel.com"
+      )
     ).toBe("NONE");
   });
 
@@ -165,6 +182,7 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["blocked.app1.vercel.com"],
+        [],
         "https://blocked.app1.vercel.com"
       )
     ).toBe("BLOCK");
@@ -172,6 +190,7 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["blocked.app1.vercel.com"],
+        [],
         "https://unblocked.app1.vercel.com"
       )
     ).toBe("NONE");
@@ -179,6 +198,7 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["blocked.app1.vercel.com"],
+        [],
         "https://app1.vercel.com"
       )
     ).toBe("NONE");
@@ -186,6 +206,7 @@ describe("scanDomain", () => {
       scanDomain(
         EMPTY_BLOOM_FILTER,
         ["blocked.app1.vercel.com"],
+        [],
         "https://vercel.com"
       )
     ).toBe("NONE");
@@ -203,9 +224,28 @@ describe("scanDomain", () => {
           salt: "abc",
         },
         [],
+        [],
         "https://google.com"
       )
     ).toBe("BLOCK");
+  });
+
+  it("should return a none action when domain is in the bloom filter and in the recently removed list", () => {
+    expect(
+      scanDomain(
+        // This bloom filter contains the domain "google.com"
+        {
+          hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
+          bitVector: "AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          k: 1,
+          bits: 256,
+          salt: "abc",
+        },
+        [],
+        ["google.com"],
+        "https://google.com"
+      )
+    ).toBe("NONE");
   });
 
   it("should return a none action when domain not in the bloom filter", () => {
@@ -219,6 +259,7 @@ describe("scanDomain", () => {
           bits: 256,
           salt: "abc",
         },
+        [],
         [],
         "https://yahoo.com"
       )
@@ -235,10 +276,20 @@ describe("scanDomain", () => {
       blocklist!.bloomFilter.url
     );
     expect(
-      scanDomain(bloomFilter!, blocklist!.recent, "https://google.com")
+      scanDomain(
+        bloomFilter!,
+        blocklist!.recentlyAdded,
+        blocklist!.recentlyRemoved,
+        "https://google.com"
+      )
     ).toBe("NONE");
     expect(
-      scanDomain(bloomFilter!, blocklist!.recent, "https://-magiceden.io")
+      scanDomain(
+        bloomFilter!,
+        blocklist!.recentlyAdded,
+        blocklist!.recentlyRemoved,
+        "https://-magiceden.io"
+      )
     ).toBe("BLOCK");
   });
 });
