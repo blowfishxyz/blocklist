@@ -23,8 +23,8 @@ export type ErrorCallback = (error: unknown) => void;
 // recent domains every 5 minutes.
 export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
-  priorityBlockLists: string[] = [],
-  priorityAllowLists: string[] = [],
+  priorityBlockLists: string[] | null = null,
+  priorityAllowLists: string[] | null = null,
   reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
   const apiKeyConfig = apiConfig.apiKey
