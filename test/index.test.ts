@@ -25,8 +25,8 @@ describe("fetchDomainBlocklist", () => {
     const blocklist = await fetchDomainBlocklist(apiConfig);
     expect(blocklist).not.toBeNull();
     expect(blocklist).toHaveProperty("bloomFilter");
-    expect(blocklist).toHaveProperty("recentDeleted");
-    expect(blocklist).toHaveProperty("recentAdded");
+    expect(blocklist).toHaveProperty("recentlyAdded");
+    expect(blocklist).toHaveProperty("recentlyRemoved");
     expect(blocklist!.bloomFilter).toHaveProperty("url");
     expect(blocklist!.bloomFilter.url).not.toBe("");
     expect(blocklist!.bloomFilter).toHaveProperty("hash");
