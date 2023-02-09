@@ -85,7 +85,8 @@ export async function fetchDomainBlocklistBloomFilter(
 // `recent` has to be passed from stored blocklist object.
 export function scanDomain(
   bloomFilter: BloomFilter,
-  recent: string[],
+  recentlyAdded: string[],
+  recentlyRemoved: string[],
   url: string
 ): Action {
   const domain = new URL(url).hostname.toLowerCase();
@@ -95,10 +96,13 @@ export function scanDomain(
   // Blowfish API is responsible for not including public suffix domains to the bloom filter.
   for (let i = 0; i < domainParts.length - 1; i++) {
     const domainToLookup = domainParts.slice(i).join(".");
-    if (recent.includes(domainToLookup)) {
+    if (recentlyAdded.includes(domainToLookup)) {
       return Action.BLOCK;
     }
-    if (lookup(bloomFilter, domainToLookup)) {
+    if (
+      lookup(bloomFilter, domainToLookup) &&
+      !recentlyRemoved.includes(domainToLookup)
+    ) {
       return Action.BLOCK;
     }
   }

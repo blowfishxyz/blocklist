@@ -5,7 +5,8 @@ export type ApiConfig = {
 
 export type DomainBlocklist = {
   bloomFilter: { url: string; hash: string };
-  recent: string[];
+  recentlyAdded: string[];
+  recentlyRemoved: string[];
 };
 
 export type BloomFilter = {
