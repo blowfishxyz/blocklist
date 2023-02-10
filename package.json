@@ -1,6 +1,6 @@
 {
   "name": "@blowfishxyz/blocklist",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Fetch and execute lookups on Blowfish blocklists",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "cross-fetch": "^3.1.5",
-    "sha1": "^1.1.1",
-    "whatwg-url": "^12.0.0"
+    "sha1": "^1.1.1"
   }
 }
