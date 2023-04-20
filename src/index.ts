@@ -26,9 +26,12 @@ export async function fetchDomainBlocklist(
   priorityAllowLists: string[] | null = null,
   reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
+  const headers = {
+    "Content-Type": "application/json"
+  };
   const apiKeyConfig = apiConfig.apiKey
-    ? { headers: { "x-api-key": apiConfig.apiKey } }
-    : {};
+    ? { headers: { "x-api-key": apiConfig.apiKey, ...headers } }
+    : { headers: headers };
   try {
     // We wrap errors with a null so any downtime won't break user's browsing flow.
     const response = await fetch(apiConfig.domainBlocklistUrl, {
