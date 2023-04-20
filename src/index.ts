@@ -27,7 +27,7 @@ export async function fetchDomainBlocklist(
   reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
   const headers = {
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
   };
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey, ...headers } }
