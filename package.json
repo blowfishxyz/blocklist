@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "@blowfishxyz/blocklist",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Fetch and execute lookups on Blowfish blocklists",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",

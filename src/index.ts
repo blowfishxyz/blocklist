@@ -2,12 +2,19 @@ import fetch from "cross-fetch";
 import { ApiConfig, Action, BloomFilter, DomainBlocklist } from "./types";
 import { lookup } from "./bloomFilter";
 
-export type { ApiConfig, Action, BloomFilter, DomainBlocklist };
+export type { ApiConfig, BloomFilter, DomainBlocklist };
+
+export { Action };
 
 export const DEFAULT_BLOCKLIST_URL =
   "https://api.blowfish.xyz/v0/domains/blocklist";
 
 export type ErrorCallback = (error: unknown) => void;
+
+// Use native fetch where supported
+// cross-fetch doesn't support workers (https://github.com/lquixada/cross-fetch/issues/78)
+const fetcher =
+  typeof self !== "undefined" && !!self.fetch ? self.fetch : fetch;
 
 // Fetch blocklist JSON object from Blowfish API with link to bloom filter and recent domains.
 //
@@ -34,7 +41,7 @@ export async function fetchDomainBlocklist(
     : { headers: headers };
   try {
     // We wrap errors with a null so any downtime won't break user's browsing flow.
-    const response = await fetch(apiConfig.domainBlocklistUrl, {
+    const response = await fetcher(apiConfig.domainBlocklistUrl, {
       method: "POST",
       body: JSON.stringify({
         priorityBlockLists,
@@ -64,7 +71,7 @@ export async function fetchDomainBlocklistBloomFilter(
   reportError: ErrorCallback | undefined = undefined
 ): Promise<BloomFilter | null> {
   try {
-    const response = await fetch(url);
+    const response = await fetcher(url);
     if (!response.ok) {
       if (reportError) {
         reportError(await response.text());
