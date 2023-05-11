@@ -1,4 +1,5 @@
 import sha1 from "sha1";
+import { Buffer } from "buffer";
 import type { BloomFilter } from "./types";
 
 // This is an implementation of a bloom filter lookup algorithm.

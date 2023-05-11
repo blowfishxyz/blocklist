@@ -8,6 +8,8 @@ It's designed to support React Native, Chrome Extension and Node.js environments
 npm install @blowfishxyz/blocklist
 ```
 
+It's also recommended for React Native apps to install `react-native-url-polyfill`.
+
 ## Usage
 
 In order to execute lookups, you need to fetch a **blocklist object** and **bloom filter**. 
