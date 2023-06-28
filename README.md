@@ -22,7 +22,7 @@ This object includes a link to the bloom filter and the recently added/removed d
 We recommend updating it every 5 minutes.
 
 ```javascript
-import { fetchBlocklist, DEFAULT_BLOCKLIST_URL } from '@blowfishxyz/blocklist';
+import { fetchDomainBlocklist, DEFAULT_BLOCKLIST_URL } from '@blowfishxyz/blocklist';
 
 const apiConfig: ApiConfig = {
     domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
@@ -48,12 +48,12 @@ If app doesn't have a stored hash, or stored hash doesn't match `blocklist.bloom
 Then, save the bloom filter object itself and its hash to your local database.
 
 ```javascript
-import { fetchBloomFilter } from '@blowfishxyz/blocklist';
+import { fetchDomainBlocklist, fetchDomainBlocklistBloomFilter } from '@blowfishxyz/blocklist';
 
 const blocklist = await fetchDomainBlocklist(apiConfig);
 const storedHash = [...]; // fetch it from your storage
 if (storedHash != blocklist.bloomFilter.hash) {
-    const bloomFilter = await fetchBloomFilter(blocklist.bloomFilter.url);
+    const bloomFilter = await fetchDomainBlocklistBloomFilter(blocklist.bloomFilter.url);
     [...] // save bloomFilter to a local database
     [...] // save bloomFilter.hash or blocklist.bloomFilter.hash to a local database
 }
