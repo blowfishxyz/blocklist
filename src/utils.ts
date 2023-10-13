@@ -1,10 +1,6 @@
 import fetch from "cross-fetch";
 import { ApiConfig, Action, BloomFilter, DomainBlocklist } from "./types";
 import { lookup } from "./bloomFilter";
-import {
-  DownloadBlocklistRequest,
-  createMultiChainClient,
-} from "@blowfishxyz/api-client/v20230605";
 
 export type { ApiConfig, BloomFilter, DomainBlocklist };
 
@@ -33,17 +29,34 @@ export const fetcher =
 // recent domains every 5 minutes.
 export async function fetchDomainBlocklist(
   apiConfig: ApiConfig,
-  request?: DownloadBlocklistRequest,
-  reportError?: ErrorCallback
+  priorityBlockLists: string[] | null = null,
+  priorityAllowLists: string[] | null = null,
+  reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
-  const client = createMultiChainClient({
-    basePath: apiConfig.domainBlocklistUrl,
-    apiKey: apiConfig.apiKey,
-  });
+  const headers = {
+    "Content-Type": "application/json",
+  };
+  const apiKeyConfig = apiConfig.apiKey
+    ? { headers: { "x-api-key": apiConfig.apiKey, ...headers } }
+    : { headers: headers };
   try {
     // We wrap errors with a null so any downtime won't break user's browsing flow.
-    const response = await client.downloadBlocklist(request);
-    return response;
+    const response = await fetcher(apiConfig.domainBlocklistUrl, {
+      method: "POST",
+      body: JSON.stringify({
+        priorityBlockLists,
+        priorityAllowLists,
+      }),
+      ...apiKeyConfig,
+    });
+    if (!response.ok) {
+      if (reportError) {
+        reportError(await response.text());
+      }
+      return null;
+    }
+    // Catch JSON decoding errors too.
+    return (await response.json()) as DomainBlocklist;
   } catch (error: unknown) {
     if (reportError) {
       reportError(error);

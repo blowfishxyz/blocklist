@@ -42,7 +42,7 @@ describe("fetchDomainBlocklist", () => {
     const apiConfig: ApiConfig = {
       domainBlocklistUrl: "http://2CeaMJtzCTdx8ht2.com/", // this domain does not exist
     };
-    await fetchDomainBlocklist(apiConfig, undefined, reportError);
+    await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
     expect(errors.length).toBe(1);
     expect((errors[0] as Error).message).toBe(
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
@@ -58,7 +58,7 @@ describe("fetchDomainBlocklist", () => {
     const apiConfig: ApiConfig = {
       domainBlocklistUrl: "https://google.com/fdjfkdkdkfdkdf/", // this should return 404
     };
-    await fetchDomainBlocklist(apiConfig, undefined, reportError);
+    await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
     expect(errors.length).toBe(1);
     expect(errors[0] as string).toContain("Error 404 (Not Found)");
   });
