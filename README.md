@@ -31,7 +31,8 @@ import {
 
 const apiConfig: ApiConfig = {
   basePath: DEFAULT_BLOCKLIST_URL,
-  apiKey: "",
+  // It's highly encouraged to use a proxy server to not expose your API key on the client (see: https://docs.blowfish.xyz/docs/wallet-integration-guide#optional-proxy-server)
+  apiKey: "you-api-key",
 };
 const blocklist = new BlowfishLocalBlocklist(apiConfig);
 
@@ -66,7 +67,7 @@ We don't update blocklist hash more often than every 24 hours.
 
 Functions that depend on API an/or network can return `null` when I/O errors are encountered.
 
-If you would like to track errors, you can pass optional `trackError` callback to `BlowfishLocalBlocklist` constructor.
+If you would like to track errors, you can pass optional `reportError` callback to `BlowfishLocalBlocklist` constructor.
 
 It could be called with an `Error` or with a string.
 
