@@ -23,8 +23,8 @@
     "src/**/*"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
-    "watch": "npm run build -- --watch src",
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --env.NODE_ENV production",
+    "watch": "npm run build -- --watch src --env.NODE_ENV development",
     "prepublishOnly": "npm run build",
     "prepare": "npm run build",
     "lint:prettier": "prettier --write \"{src,test}/**/*.{ts,tsx}\"",
@@ -51,6 +51,7 @@
     "typescript": "^4.9.4"
   },
   "dependencies": {
+    "@blowfishxyz/api-client": "file:~/code/blowfish/blowfish-frontend-monorepo/packages/api-client",
     "buffer": "^6.0.3",
     "cross-fetch": "^3.1.5",
     "sha1": "^1.1.1"
