@@ -6,8 +6,8 @@ settings:
 
 dependencies:
   '@blowfishxyz/api-client':
-    specifier: file:~/code/blowfish/blowfish-frontend-monorepo/packages/api-client
-    version: file:../blowfish-frontend-monorepo/packages/api-client
+    specifier: 0.1.2-beta.1
+    version: 0.1.2-beta.1
   buffer:
     specifier: ^6.0.3
     version: 6.0.3
@@ -397,6 +397,10 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
     dev: true
+
+  /@blowfishxyz/api-client@0.1.2-beta.1:
+    resolution: {integrity: sha512-cy7sPP2r/ayTvug66ZTOURtZVfTXtjEKYItRmqAjAllQClMq5vwPfdJG57Wa4o0uEnKUq73lqUYQnx5YZaTZMQ==}
+    dev: false
 
   /@esbuild/android-arm@0.15.18:
     resolution: {integrity: sha512-5GT+kcs2WVGjVs7+boataCkO5Fg0y4kCjzkB5bAip7H4jfnOS3dA6KPiww9W1OEKTKeAcUVhdZGvgI65OXmUnw==}
@@ -3506,9 +3510,3 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  file:../blowfish-frontend-monorepo/packages/api-client:
-    resolution: {directory: ../blowfish-frontend-monorepo/packages/api-client, type: directory}
-    name: '@blowfishxyz/api-client'
-    version: 0.1.1
-    dev: false
