@@ -26,7 +26,7 @@ export type BloomFilter = {
 
 export type LocalBlocklist = {
   domainBlocklist: DomainBlocklist;
-  bloomFilter: BloomFilter;
+  bloomFilterObject: BloomFilter;
 };
 
 export interface BlowifshBlocklistStorage {

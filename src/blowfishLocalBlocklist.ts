@@ -83,10 +83,10 @@ export class BlowfishLocalBlocklist {
     }
 
     this.storage.setLocalBlocklist(storedBlocklist);
-    const { domainBlocklist, bloomFilter } = storedBlocklist;
+    const { domainBlocklist, bloomFilterObject } = storedBlocklist;
 
     const action = scanDomain(
-      bloomFilter,
+      bloomFilterObject,
       domainBlocklist.recentlyAdded,
       domainBlocklist.recentlyRemoved,
       url
@@ -131,27 +131,27 @@ export class BlowfishLocalBlocklist {
       return;
     }
 
-    const bloomFilter = await fetchDomainBlocklistBloomFilter(
+    const bloomFilterObject = await fetchDomainBlocklistBloomFilter(
       domainBlocklist.bloomFilter.url,
       this.reportError
     );
 
-    if (!bloomFilter) {
-      logger("fetchBlocklist fail 2 bloomFilter");
+    if (!bloomFilterObject) {
+      logger("fetchBlocklist fail 2 bloomFilterObject");
       this.reportError(new Error("Failed to fetch bloom filter"));
       return;
     }
 
     await this.storage.setLocalBlocklist({
       domainBlocklist,
-      bloomFilter,
+      bloomFilterObject,
     });
 
-    logger("fetchBlocklist success ", domainBlocklist, bloomFilter);
+    logger("fetchBlocklist success ", domainBlocklist, bloomFilterObject);
 
     return {
       domainBlocklist,
-      bloomFilter,
+      bloomFilterObject,
     };
   }
 
