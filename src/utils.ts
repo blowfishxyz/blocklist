@@ -1,8 +1,8 @@
 import fetch from "cross-fetch";
-import { ApiConfig, Action, BloomFilter, DomainBlocklist } from "./types";
+import { Action, BloomFilter, DomainBlocklist } from "./types";
 import { lookup } from "./bloomFilter";
 
-export type { ApiConfig, BloomFilter, DomainBlocklist };
+export type { BloomFilter, DomainBlocklist };
 
 export { Action };
 
@@ -28,7 +28,10 @@ export const fetcher =
 // This optimization allows to save bandwidth and never download unchanged bloom filter, while still updating
 // recent domains every 5 minutes.
 export async function fetchDomainBlocklist(
-  apiConfig: ApiConfig,
+  apiConfig: {
+    domainBlocklistUrl: string;
+    apiKey?: string | null;
+  },
   priorityBlockLists: string[] | null = null,
   priorityAllowLists: string[] | null = null,
   reportError: ErrorCallback | undefined = undefined
@@ -91,7 +94,7 @@ export async function fetchDomainBlocklistBloomFilter(
 // Scan if url's domain is blocked by the bloom filter or is contained in the "recent domains" list.
 //
 // This function does not implement any priority logic and considers any domain in the blocklist blocked.
-// `recent` has to be passed from stored blocklist object.
+// `recentlyAdded` and `recentlyRemoved` have to be passed from stored blocklist object.
 export function scanDomain(
   bloomFilter: BloomFilter,
   recentlyAdded: string[],

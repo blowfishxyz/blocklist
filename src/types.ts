@@ -6,7 +6,7 @@ import {
 } from "./blowfishLocalBlocklist";
 
 export type ApiConfig = {
-  domainBlocklistUrl: string;
+  basePath: string;
   apiKey?: string;
 };
 

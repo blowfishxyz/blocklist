@@ -3,7 +3,6 @@ import {
   fetchDomainBlocklist,
   fetchDomainBlocklistBloomFilter,
   scanDomain,
-  ApiConfig,
   BloomFilter,
   DEFAULT_BLOCKLIST_URL,
 } from "../src/utils";
@@ -18,7 +17,7 @@ const EMPTY_BLOOM_FILTER: BloomFilter = {
 
 describe("fetchDomainBlocklist", () => {
   it("should return a not-null blocklist fetched from API with required fields", async () => {
-    const apiConfig: ApiConfig = {
+    const apiConfig = {
       domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
@@ -39,7 +38,7 @@ describe("fetchDomainBlocklist", () => {
     const reportError = (error: unknown) => {
       errors.push(error);
     };
-    const apiConfig: ApiConfig = {
+    const apiConfig = {
       domainBlocklistUrl: "http://2CeaMJtzCTdx8ht2.com/", // this domain does not exist
     };
     await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
@@ -55,7 +54,7 @@ describe("fetchDomainBlocklist", () => {
     const reportError = (error: unknown) => {
       errors.push(error);
     };
-    const apiConfig: ApiConfig = {
+    const apiConfig = {
       domainBlocklistUrl: "https://google.com/fdjfkdkdkfdkdf/", // this should return 404
     };
     await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
@@ -66,7 +65,7 @@ describe("fetchDomainBlocklist", () => {
 
 describe("fetchDomainBlocklistBloomFilter", () => {
   it("should return a bloom filter object from url in blocklist object", async () => {
-    const apiConfig: ApiConfig = {
+    const apiConfig = {
       domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
@@ -268,7 +267,7 @@ describe("scanDomain", () => {
   });
 
   it("should return actions for domain in bloom filter from API", async () => {
-    const apiConfig: ApiConfig = {
+    const apiConfig = {
       domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
       apiKey: process.env.BLOWFISH_API_KEY,
     };

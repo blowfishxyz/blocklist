@@ -2,7 +2,7 @@ import {
   DownloadBlocklistRequest,
   createMultiChainClient,
 } from "@blowfishxyz/api-client/v20230605";
-import { BlowifshBlocklistStorage, LocalBlocklist } from "./types";
+import { ApiConfig, BlowifshBlocklistStorage, LocalBlocklist } from "./types";
 import {
   Action,
   fetchDomainBlocklistBloomFilter,
@@ -48,10 +48,7 @@ class InMemoryStorageImpl implements BlowifshBlocklistStorage {
 export class BlowfishLocalBlocklist {
   private readonly client: ReturnType<typeof createMultiChainClient>;
   constructor(
-    apiConfig: {
-      basePath: string;
-      apiKey: string | undefined;
-    },
+    apiConfig: ApiConfig,
     private readonly blocklistConfig:
       | DownloadBlocklistRequest
       | undefined = undefined,

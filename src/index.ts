@@ -13,6 +13,7 @@ export type { ErrorCallback } from "./utils";
 
 export {
   scanDomain,
+  fetchDomainBlocklist,
   fetchDomainBlocklistBloomFilter,
   DEFAULT_BLOCKLIST_URL,
 } from "./utils";

@@ -26,12 +26,13 @@ We recommend updating it every 5 minutes.
 import {
   LocalBlocklist,
   BlowfishLocalBlocklist,
-  DEFAULT_BLOCKLIST_URL,
+  ApiConfig,
 } from "@blowfishxyz/blocklist";
 
 const apiConfig: ApiConfig = {
-  basePath: DEFAULT_BLOCKLIST_URL,
-  // It's highly encouraged to use a proxy server to not expose your API key on the client (see: https://docs.blowfish.xyz/docs/wallet-integration-guide#optional-proxy-server)
+  basePath: "https://api.blowfish.xyz",
+  // It's highly encouraged to use a proxy server to not expose your API key on the client (see: https://docs.blowfish.xyz/docs/wallet-integration-guide#optional-proxy-server).
+  // When using a proxy server, replace basePath with your endpoint and set apiKey to `undefined`.
   apiKey: "you-api-key",
 };
 const blocklist = new BlowfishLocalBlocklist(apiConfig);
