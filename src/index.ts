@@ -6,7 +6,9 @@ export type {
   PriorityBlockListsEnum,
   BlockListsEnum,
   AllowListsEnum,
-  BlowifshBlocklistStorage,
+  BlowfishBlocklistStorage,
+  BlowfishBlocklistStorageKey,
+  BLOWFISH_API_BASE_URL,
 } from "./types";
 export type { ErrorCallback } from "./utils";
 

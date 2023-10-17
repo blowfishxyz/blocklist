@@ -4,8 +4,8 @@ import {
 } from "@blowfishxyz/api-client/v20230605";
 import {
   ApiConfig,
-  BlowifshBlocklistStorageKey,
-  BlowifshBlocklistStorage,
+  BlowfishBlocklistStorageKey,
+  BlowfishBlocklistStorage,
 } from "./types";
 import {
   Action,
@@ -16,6 +16,7 @@ import {
   scanDomain,
   withRetry,
 } from "./utils";
+import { InMemoryStorage } from "./inMemoryStorage";
 
 export {
   DownloadBlocklistRequestAllowListsEnum,
@@ -31,18 +32,6 @@ const logger =
       }
     : console.log;
 
-class InMemoryStorageImpl implements BlowifshBlocklistStorage {
-  private _storage: { [k in BlowifshBlocklistStorageKey]?: unknown } = {};
-
-  async getItem<T>(key: BlowifshBlocklistStorageKey) {
-    return this._storage[key] as T | undefined;
-  }
-
-  async setItem(key: BlowifshBlocklistStorageKey, data: unknown) {
-    this._storage[key] = data;
-  }
-}
-
 export class BlowfishLocalBlocklist {
   private readonly client: ReturnType<typeof createMultiChainClient>;
   constructor(
@@ -50,7 +39,7 @@ export class BlowfishLocalBlocklist {
     private readonly blocklistConfig:
       | DownloadBlocklistRequest
       | undefined = undefined,
-    private readonly storage: BlowifshBlocklistStorage = new InMemoryStorageImpl(),
+    private readonly storage: BlowfishBlocklistStorage = new InMemoryStorage(),
     private readonly reportError: (err: unknown) => void = () => {
       /**/
     }
@@ -65,10 +54,10 @@ export class BlowfishLocalBlocklist {
   async scanDomain(url: string): Promise<Action> {
     logger("scanDomain start");
     let storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
-      BlowifshBlocklistStorageKey.DomainBlocklist
+      BlowfishBlocklistStorageKey.DomainBlocklist
     );
     let storedBloomFilter = await this.storage.getItem<BloomFilter>(
-      BlowifshBlocklistStorageKey.BloomFilter
+      BlowfishBlocklistStorageKey.BloomFilter
     );
 
     logger("scanDomain fetch 1", storedDomainBlocklist);
@@ -76,10 +65,10 @@ export class BlowfishLocalBlocklist {
     if (!storedDomainBlocklist || !storedBloomFilter) {
       await withRetry(() => this.fetchBlocklist(), 3);
       storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
-        BlowifshBlocklistStorageKey.DomainBlocklist
+        BlowfishBlocklistStorageKey.DomainBlocklist
       );
       storedBloomFilter = await this.storage.getItem<BloomFilter>(
-        BlowifshBlocklistStorageKey.BloomFilter
+        BlowfishBlocklistStorageKey.BloomFilter
       );
       logger("scanDomain fetch 2", storedDomainBlocklist);
     }
@@ -102,7 +91,7 @@ export class BlowfishLocalBlocklist {
       logger("scanDomain BLOCK");
       const allowlist =
         (await this.storage.getItem<string[]>(
-          BlowifshBlocklistStorageKey.UserAllowlist
+          BlowfishBlocklistStorageKey.UserAllowlist
         )) || [];
       const hostname = new URL(url).hostname;
       if (allowlist.includes(hostname)) {
@@ -123,7 +112,7 @@ export class BlowfishLocalBlocklist {
     );
     logger("fetchBlocklist fetched", domainBlocklist);
     const storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
-      BlowifshBlocklistStorageKey.DomainBlocklist
+      BlowfishBlocklistStorageKey.DomainBlocklist
     );
     logger("fetchBlocklist storage", storedDomainBlocklist);
 
@@ -133,7 +122,7 @@ export class BlowfishLocalBlocklist {
         domainBlocklist?.bloomFilter.hash
     ) {
       await this.storage.setItem(
-        BlowifshBlocklistStorageKey.DomainBlocklist,
+        BlowfishBlocklistStorageKey.DomainBlocklist,
         domainBlocklist
       );
 
@@ -157,11 +146,11 @@ export class BlowfishLocalBlocklist {
       return;
     }
     await this.storage.setItem(
-      BlowifshBlocklistStorageKey.DomainBlocklist,
+      BlowfishBlocklistStorageKey.DomainBlocklist,
       domainBlocklist
     );
     await this.storage.setItem(
-      BlowifshBlocklistStorageKey.BloomFilter,
+      BlowfishBlocklistStorageKey.BloomFilter,
       bloomFilterObject
     );
     logger("fetchBlocklist success ", domainBlocklist, bloomFilterObject);
@@ -170,10 +159,10 @@ export class BlowfishLocalBlocklist {
   async allowDomainLocally(domain: string) {
     const existing =
       (await this.storage.getItem<string[]>(
-        BlowifshBlocklistStorageKey.UserAllowlist
+        BlowfishBlocklistStorageKey.UserAllowlist
       )) || [];
     await this.storage.setItem(
-      BlowifshBlocklistStorageKey.UserAllowlist,
+      BlowfishBlocklistStorageKey.UserAllowlist,
       existing.concat(domain)
     );
     logger("allowDomainLocally success ");

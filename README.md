@@ -1,6 +1,6 @@
 # Blowfish Local Blocklists
 
-This is a Javascript library that makes it easy to access the Blowfish Local Blocklist API: for example, to fetch the blocklist object from API, scan a domain against the blocklist and saved bloom filter.
+This is a Javascript/Typescript library that makes it easy to access the Blowfish Local Blocklist API: for example, to fetch the blocklist object from API, scan a domain against the blocklist and saved bloom filter.
 
 It's designed to support React Native, Chrome Extension and Node.js environments.
 
@@ -24,13 +24,13 @@ We recommend updating it every 5 minutes.
 
 ```javascript
 import {
-  LocalBlocklist,
   BlowfishLocalBlocklist,
   ApiConfig,
+  BLOWFISH_API_BASE_URL,
 } from "@blowfishxyz/blocklist";
 
 const apiConfig: ApiConfig = {
-  basePath: "https://api.blowfish.xyz",
+  basePath: BLOWFISH_API_BASE_URL,
   // It's highly encouraged to use a proxy server to not expose your API key on the client (see: https://docs.blowfish.xyz/docs/wallet-integration-guide#optional-proxy-server).
   // When using a proxy server, replace basePath with your endpoint and set apiKey to `undefined`.
   apiKey: "you-api-key",
@@ -80,24 +80,19 @@ It could be called with an `Error` or with a string.
 // src/blocklist.ts
 import {
   BlowfishLocalBlocklist,
-  BlowifshBlocklistStorage,
+  BlowfishBlocklistStorageKey,
+  BlowfishBlocklistStorage,
+  BLOWFISH_API_BASE_URL,
 } from "@blowfishxyz/blocklist";
 
-const storage: BlowifshBlocklistStorage = {
-  getLocalBlocklist: async () => {
-    const storage = await chrome.storage.local.get(["blocklist:v0.0.7"]);
-    return storage["blocklist:v0.0.7"];
+const storage: BlowfishBlocklistStorage = {
+  async getItem<T>(key: BlowfishBlocklistStorageKey) {
+    const storage = chrome.storage.local.get([key]);
+    return storage[key] as T | undefined;
   },
-  setLocalBlocklist: async (data: LocalBlocklist) => {
-    return chrome.storage.local.set({ "blocklist:v0.0.7": data });
-  },
-  getUserAllowlist: async () => {
-    const storage = await chrome.storage.local.get(["allowlist:v0.0.7"]);
-    return storage["allowlist:v0.0.7"];
-  },
-  setUserAllowlist: async (newAllowlist: string[]) => {
+  async setItem(key: BlowfishBlocklistStorageKey, data: unknown) {
     return chrome.storage.local.set({
-      "allowlist:v0.0.7": newAllowlist,
+      [key]: data,
     });
   },
 };
@@ -160,11 +155,9 @@ function proceedToBlockedDomainButtonClickHandler() {
   - `priorityAllowLists: PriorityAllowListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `BLOWFISH`, `METAMASK`, `DEFILLAMA`)
   - `blockLists: BlockListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `PHANTOM`, `BLOWFISH`, `BLOWFISH_AUTOMATED`, `SOLFARE`, `PHISHFORT`, `SCAMSNIFFER`, `METAMASK`)
   - `allowLists: AllowListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `BLOWFISH`, `METAMASK`, `DEFILLAMA`)
-- `storage: BlowifshBlocklistStorage`
-  - `getLocalBlockList: () => Promise<LocalBlocklist | undefined>`: get the blocklist metadata with bloom filter from the storage.
-  - `setLocalBlockList: (data: LocalBlocklist) => Promise<void>`: save the blocklist metadata with bloom filter to the storage.
-  - `getUserAllowList: () => Promise<string[] | undefined>`: get the user allow-listed domains from the storage.
-  - `setUserAllowList: (data: string[]) => Promise<void>`: save the user allow-listed domains to the storage.
+- `storage: BlowfishBlocklistStorage` If storage is not specified we use in-memory storage. It is highly encouraged to provide the proper storage for your environemnt ([see guides](#guides)).
+  - `getItem<T>(key: BlowfishBlocklistStorageKey): Promise<T | undefined>`: get item by key from the environment storage.
+  - `setItem(key: BlowfishBlocklistStorageKey, data: unknown)`: set item by key to the environment storage.
 - `reportError: (error: unknown) => void`: A callback function that library uses to track errors when result is `null`. (optional)
 
 ### Methods

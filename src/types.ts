@@ -24,15 +24,15 @@ export type BloomFilter = {
   salt: string;
 };
 
-export enum BlowifshBlocklistStorageKey {
+export enum BlowfishBlocklistStorageKey {
   DomainBlocklist = "BF:DOMAIN_BLOCKLIST:0.0.7",
   BloomFilter = "BF:BLOCKLIST_BLOOM_FILTER:0.0.7",
   UserAllowlist = "BF:USER_ALLOWLIST:0.0.7",
 }
 
-export interface BlowifshBlocklistStorage {
-  getItem: <T>(key: BlowifshBlocklistStorageKey) => Promise<T | undefined>;
-  setItem: <T>(key: BlowifshBlocklistStorageKey, data: T) => Promise<void>;
+export interface BlowfishBlocklistStorage {
+  getItem: <T>(key: BlowfishBlocklistStorageKey) => Promise<T | undefined>;
+  setItem: <T>(key: BlowfishBlocklistStorageKey, data: T) => Promise<void>;
 }
 
 export type BlockListsEnum = DownloadBlocklistRequestBlockListsEnum;
@@ -46,3 +46,5 @@ export enum Action {
   BLOCK = "BLOCK",
   NONE = "NONE",
 }
+
+export const BLOWFISH_API_BASE_URL = "https://api.blowfish.xyz";
