@@ -2,7 +2,6 @@ export type {
   ApiConfig,
   BloomFilter,
   DomainBlocklist,
-  LocalBlocklist,
   PriorityAllowListsEnum,
   PriorityBlockListsEnum,
   BlockListsEnum,

@@ -24,16 +24,15 @@ export type BloomFilter = {
   salt: string;
 };
 
-export type LocalBlocklist = {
-  domainBlocklist: DomainBlocklist;
-  bloomFilterObject: BloomFilter;
-};
+export enum BlowifshBlocklistStorageKey {
+  DomainBlocklist = "BF:DOMAIN_BLOCKLIST:0.0.7",
+  BloomFilter = "BF:BLOCKLIST_BLOOM_FILTER:0.0.7",
+  UserAllowlist = "BF:USER_ALLOWLIST:0.0.7",
+}
 
 export interface BlowifshBlocklistStorage {
-  getLocalBlocklist: () => Promise<LocalBlocklist | undefined>;
-  setLocalBlocklist: (data: LocalBlocklist) => Promise<void>;
-  getUserAllowlist: () => Promise<string[] | undefined>;
-  setUserAllowlist: (data: string[]) => Promise<void>;
+  getItem: <T>(key: BlowifshBlocklistStorageKey) => Promise<T | undefined>;
+  setItem: <T>(key: BlowifshBlocklistStorageKey, data: T) => Promise<void>;
 }
 
 export type BlockListsEnum = DownloadBlocklistRequestBlockListsEnum;

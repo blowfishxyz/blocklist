@@ -2,9 +2,15 @@ import {
   DownloadBlocklistRequest,
   createMultiChainClient,
 } from "@blowfishxyz/api-client/v20230605";
-import { ApiConfig, BlowifshBlocklistStorage, LocalBlocklist } from "./types";
+import {
+  ApiConfig,
+  BlowifshBlocklistStorageKey,
+  BlowifshBlocklistStorage,
+} from "./types";
 import {
   Action,
+  BloomFilter,
+  DomainBlocklist,
   fetchDomainBlocklistBloomFilter,
   fetcher,
   scanDomain,
@@ -26,22 +32,14 @@ const logger =
     : console.log;
 
 class InMemoryStorageImpl implements BlowifshBlocklistStorage {
-  private _blockList: LocalBlocklist | undefined = undefined;
-  private _allowList: string[] = [];
+  private _storage: { [k in BlowifshBlocklistStorageKey]?: unknown } = {};
 
-  getLocalBlocklist() {
-    return Promise.resolve(this._blockList);
+  async getItem<T>(key: BlowifshBlocklistStorageKey) {
+    return this._storage[key] as T | undefined;
   }
-  setLocalBlocklist(data: LocalBlocklist) {
-    this._blockList = data;
-    return Promise.resolve();
-  }
-  getUserAllowlist() {
-    return Promise.resolve(this._allowList);
-  }
-  setUserAllowlist(data: string[]) {
-    this._allowList = data;
-    return Promise.resolve();
+
+  async setItem(key: BlowifshBlocklistStorageKey, data: unknown) {
+    this._storage[key] = data;
   }
 }
 
@@ -66,35 +64,46 @@ export class BlowfishLocalBlocklist {
 
   async scanDomain(url: string): Promise<Action> {
     logger("scanDomain start");
-    let storedBlocklist = await this.storage.getLocalBlocklist();
+    let storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
+      BlowifshBlocklistStorageKey.DomainBlocklist
+    );
+    let storedBloomFilter = await this.storage.getItem<BloomFilter>(
+      BlowifshBlocklistStorageKey.BloomFilter
+    );
 
-    logger("scanDomain fetch 1", storedBlocklist);
+    logger("scanDomain fetch 1", storedDomainBlocklist);
 
-    if (!storedBlocklist) {
-      storedBlocklist = await withRetry(() => this.fetchBlocklist(), 3);
-      logger("scanDomain fetch 2", storedBlocklist);
+    if (!storedDomainBlocklist || !storedBloomFilter) {
+      await withRetry(() => this.fetchBlocklist(), 3);
+      storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
+        BlowifshBlocklistStorageKey.DomainBlocklist
+      );
+      storedBloomFilter = await this.storage.getItem<BloomFilter>(
+        BlowifshBlocklistStorageKey.BloomFilter
+      );
+      logger("scanDomain fetch 2", storedDomainBlocklist);
     }
 
-    if (!storedBlocklist) {
-      logger("scanDomain error", storedBlocklist);
+    if (!storedDomainBlocklist || !storedBloomFilter) {
+      logger("scanDomain error", storedDomainBlocklist);
       this.reportError(new Error("Failed to fetch blocklist"));
       // Note(metreniuk): should we fail silently here?
       return Action.NONE;
     }
 
-    this.storage.setLocalBlocklist(storedBlocklist);
-    const { domainBlocklist, bloomFilterObject } = storedBlocklist;
-
     const action = scanDomain(
-      bloomFilterObject,
-      domainBlocklist.recentlyAdded,
-      domainBlocklist.recentlyRemoved,
+      storedBloomFilter,
+      storedDomainBlocklist.recentlyAdded,
+      storedDomainBlocklist.recentlyRemoved,
       url
     );
 
     if (action === Action.BLOCK) {
       logger("scanDomain BLOCK");
-      const allowlist = (await this.storage.getUserAllowlist()) || [];
+      const allowlist =
+        (await this.storage.getItem<string[]>(
+          BlowifshBlocklistStorageKey.UserAllowlist
+        )) || [];
       const hostname = new URL(url).hostname;
       if (allowlist.includes(hostname)) {
         logger("scanDomain allowlist", allowlist, hostname);
@@ -107,22 +116,28 @@ export class BlowfishLocalBlocklist {
     return action;
   }
 
-  async fetchBlocklist(): Promise<LocalBlocklist | undefined> {
+  async fetchBlocklist(): Promise<void> {
     logger("fetchBlocklist start");
     const domainBlocklist = await this.client.downloadBlocklist(
       this.blocklistConfig
     );
     logger("fetchBlocklist fetched", domainBlocklist);
-    const existingBlocklist = await this.storage.getLocalBlocklist();
-    logger("fetchBlocklist storage", existingBlocklist);
+    const storedDomainBlocklist = await this.storage.getItem<DomainBlocklist>(
+      BlowifshBlocklistStorageKey.DomainBlocklist
+    );
+    logger("fetchBlocklist storage", storedDomainBlocklist);
 
     if (
-      existingBlocklist &&
-      existingBlocklist.domainBlocklist &&
-      existingBlocklist.domainBlocklist.bloomFilter.hash ===
+      storedDomainBlocklist &&
+      storedDomainBlocklist.bloomFilter.hash ===
         domainBlocklist?.bloomFilter.hash
     ) {
-      return existingBlocklist;
+      await this.storage.setItem(
+        BlowifshBlocklistStorageKey.DomainBlocklist,
+        domainBlocklist
+      );
+
+      return;
     }
 
     if (!domainBlocklist) {
@@ -141,23 +156,26 @@ export class BlowfishLocalBlocklist {
       this.reportError(new Error("Failed to fetch bloom filter"));
       return;
     }
-
-    await this.storage.setLocalBlocklist({
-      domainBlocklist,
-      bloomFilterObject,
-    });
-
+    await this.storage.setItem(
+      BlowifshBlocklistStorageKey.DomainBlocklist,
+      domainBlocklist
+    );
+    await this.storage.setItem(
+      BlowifshBlocklistStorageKey.BloomFilter,
+      bloomFilterObject
+    );
     logger("fetchBlocklist success ", domainBlocklist, bloomFilterObject);
-
-    return {
-      domainBlocklist,
-      bloomFilterObject,
-    };
   }
 
   async allowDomainLocally(domain: string) {
-    const existing = (await this.storage.getUserAllowlist()) || [];
-    await this.storage.setUserAllowlist(existing.concat(domain));
+    const existing =
+      (await this.storage.getItem<string[]>(
+        BlowifshBlocklistStorageKey.UserAllowlist
+      )) || [];
+    await this.storage.setItem(
+      BlowifshBlocklistStorageKey.UserAllowlist,
+      existing.concat(domain)
+    );
     logger("allowDomainLocally success ");
   }
 }
