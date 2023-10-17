@@ -76,6 +76,14 @@ It could be called with an `Error` or with a string.
 
 ### Browser extension
 
+1. Install Necessary Dependencies:
+
+```bash
+npm install @blowfishxyz/blocklist webextension-polyfill
+```
+
+2. Create Blocklist Module:
+
 ```typescript
 // src/blocklist.ts
 import {
@@ -103,7 +111,11 @@ export const blocklist = new BlowfishLocalBlocklist(
   storage
 );
 export { Action } from "@blowfishxyz/blocklist";
+```
 
+3. Schedule Blocklist Updates:
+
+```typescript
 // src/background.ts
 import Browser from "webextension-polyfill";
 import { blocklist } from "./blocklist";
@@ -118,7 +130,11 @@ Browser.alarms.create("refetch-blocklist", {
   periodInMinutes: 5,
   delayInMinutes: 0,
 });
+```
 
+4. Domain Scanning:
+
+```typescript
 // src/content-script.ts
 import Browser from "webextension-polyfill";
 import { blocklist, Action } from "./blocklist";
@@ -132,13 +148,119 @@ blocklist.scanDomain(window.location.href).then((action) => {
     });
   }
 });
+```
 
+5. Blocked Domain Screen:
+
+```typescript
 // src/block-screen.tsx
 import { blocklist } from "./blocklist";
 
 function proceedToBlockedDomainButtonClickHandler() {
   blocklist.allowDomainLocally(window.location.href);
 }
+```
+
+### React Native
+
+1. Install Necessary Dependencies:
+
+```bash
+npm install @blowfishxyz/blocklist react-native-async-storage react-native-background-timer react-native-url-polyfill
+```
+
+2. Create Blocklist Module:
+
+```typescript
+// src/blocklist.ts
+import {
+  BlowfishLocalBlocklist,
+  BlowfishBlocklistStorageKey,
+  BlowfishBlocklistStorage,
+  BLOWFISH_API_BASE_URL,
+} from "@blowfishxyz/blocklist";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const storage: BlowfishBlocklistStorage = {
+  async getItem<T>(key: BlowfishBlocklistStorageKey): Promise<T | undefined> {
+    const data = await AsyncStorage.getItem(key);
+    return data ? (JSON.parse(data) as T) : undefined;
+  },
+  async setItem(
+    key: BlowfishBlocklistStorageKey,
+    data: unknown
+  ): Promise<void> {
+    await AsyncStorage.setItem(key, JSON.stringify(data));
+  },
+};
+
+export const blocklist = new BlowfishLocalBlocklist(
+  { basePath: BLOWFISH_API_BASE_URL, apiKey: undefined },
+  undefined,
+  storage
+);
+export { Action } from "@blowfishxyz/blocklist";
+```
+
+3. Schedule Blocklist Updates:
+
+```typescript
+// src/background.ts
+import { blocklist } from "./blocklist";
+import BackgroundTimer from "react-native-background-timer";
+
+let intervalId;
+
+const refetchBlocklist = () => {
+  blocklist.fetchBlocklist();
+};
+export const startBlocklistRefetch = () => {
+  intervalId = BackgroundTimer.setInterval(refetchBlocklist, 5 * 60 * 60);
+};
+
+export const stopBlocklistRefetch = () => {
+  BackgroundTimer.clearInterval(intervalId);
+};
+```
+
+4. Domain Scanning:
+
+```typescript
+// src/domainScanner.ts
+import { blocklist, Action } from "./blocklist";
+
+const scanCurrentDomain = async (url: string) => {
+  const action = await blocklist.scanDomain(url);
+  if (action === Action.BLOCK) {
+    // Handle domain blocking logic
+    console.warn("Blocked domain:", url);
+  }
+};
+
+export default scanCurrentDomain;
+```
+
+5. Blocked Domain Screen:
+
+```typescript
+// src/BlockScreen.tsx
+import React from "react";
+import { TouchableOpacity, Text } from "react-native";
+import { blocklist } from "./blocklist";
+
+function proceedToBlockedDomainHandler(url: string) {
+  blocklist.allowDomainLocally(url);
+}
+
+const BlockScreen: React.FC<{ url: string }> = ({ url }) => {
+  return (
+    <TouchableOpacity onPress={() => proceedToBlockedDomainHandler(url)}>
+      <Text>Proceed to Blocked Domain</Text>
+    </TouchableOpacity>
+  );
+};
+
+export default BlockScreen;
 ```
 
 ## API Reference
