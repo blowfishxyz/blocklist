@@ -7,10 +7,15 @@ export type {
   BlockListsEnum,
   AllowListsEnum,
   BlowfishBlocklistStorage,
-  BlowfishBlocklistStorageKey,
-  BLOWFISH_API_BASE_URL,
 } from "./types";
 export type { ErrorCallback } from "./utils";
+
+export {
+  Action,
+  BLOWFISH_API_BASE_URL,
+  BlowfishBlocklistStorageKey,
+} from "./types";
+export { BlowfishLocalBlocklist } from "./blowfishLocalBlocklist";
 
 export {
   scanDomain,
@@ -18,5 +23,3 @@ export {
   fetchDomainBlocklistBloomFilter,
   DEFAULT_BLOCKLIST_URL,
 } from "./utils";
-export { Action } from "./types";
-export { BlowfishLocalBlocklist } from "./blowfishLocalBlocklist";

@@ -55,7 +55,7 @@ You can skip `apiKey` and pass custom `basePath` to route the query to your back
 
 ### Bloom filter
 
-Blocklist object links to a bloom filter. However, bloom filter is a 500 KB file, so your app should only
+Blocklist object links to a bloom filter. However, bloom filter is a 700 KB file, so your app should only
 re-download it when nessesary.
 
 To do that, we are tracking bloom filter's hash and re-fetching it if necessary.
@@ -277,6 +277,7 @@ export default BlockScreen;
   - `priorityAllowLists: PriorityAllowListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `BLOWFISH`, `METAMASK`, `DEFILLAMA`)
   - `blockLists: BlockListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `PHANTOM`, `BLOWFISH`, `BLOWFISH_AUTOMATED`, `SOLFARE`, `PHISHFORT`, `SCAMSNIFFER`, `METAMASK`)
   - `allowLists: AllowListsEnum[] | undefined`: Override domain blocking if domain is present on one of these lists, even if it's block-listed on of regular block lists (ex: `BLOWFISH`, `METAMASK`, `DEFILLAMA`)
+  - `bloomFilterTtl?: number`: How long a bloom filter and corresponding `hash` should remain static. By default, 24 hours. Minimum 24 hours, maximum 14 days. During this time, new domains will be added to `recentlyAdded` and removed from `recentlyRemoved` fields.
 - `storage: BlowfishBlocklistStorage` If storage is not specified we use in-memory storage. It is highly encouraged to provide the proper storage for your environemnt ([see guides](#guides)).
   - `getItem<T>(key: BlowfishBlocklistStorageKey): Promise<T | undefined>`: get item by key from the environment storage.
   - `setItem(key: BlowfishBlocklistStorageKey, data: unknown)`: set item by key to the environment storage.
