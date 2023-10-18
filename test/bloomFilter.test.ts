@@ -1,4 +1,4 @@
-import { BloomFilter } from "../src";
+import { BloomFilter } from "../src/utils";
 import { lookup } from "../src/bloomFilter";
 
 describe("lookup", () => {
