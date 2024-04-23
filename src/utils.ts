@@ -34,6 +34,7 @@ export async function fetchDomainBlocklist(
   },
   priorityBlockLists: string[] | null = null,
   priorityAllowLists: string[] | null = null,
+  cursor: string | null = null,
   reportError: ErrorCallback | undefined = undefined
 ): Promise<DomainBlocklist | null> {
   const headers = {
@@ -49,6 +50,7 @@ export async function fetchDomainBlocklist(
       body: JSON.stringify({
         priorityBlockLists,
         priorityAllowLists,
+        cursor,
       }),
       ...apiKeyConfig,
     });

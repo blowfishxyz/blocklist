@@ -16,7 +16,7 @@ const EMPTY_BLOOM_FILTER: BloomFilter = {
 };
 
 describe("fetchDomainBlocklist", () => {
-  it("should return a not-null blocklist fetched from API with required fields", async () => {
+  it("should return a non-null blocklist fetched from API with required fields", async () => {
     const apiConfig = {
       domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
       apiKey: process.env.BLOWFISH_API_KEY,
@@ -32,6 +32,29 @@ describe("fetchDomainBlocklist", () => {
     expect(blocklist!.bloomFilter.hash).not.toBe("");
   });
 
+  it.only("should return a cursor that can be used to re-fetch the blocklist", async () => {
+    const apiConfig = {
+      domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
+      apiKey: process.env.BLOWFISH_API_KEY,
+    };
+    const blocklist = await fetchDomainBlocklist(apiConfig);
+    expect(blocklist).not.toBeNull();
+    expect(blocklist).toHaveProperty("bloomFilter");
+    expect(blocklist).toHaveProperty("recentlyAdded");
+    expect(blocklist).toHaveProperty("recentlyRemoved");
+
+    const { nextCursor } = blocklist!;
+    const nextBlocklist = await fetchDomainBlocklist(
+      apiConfig,
+      undefined,
+      undefined,
+      nextCursor
+    );
+    expect(nextBlocklist).not.toBeNull();
+    expect(nextBlocklist!.recentlyAdded.length).toEqual(0);
+    expect(nextBlocklist!.recentlyRemoved.length).toEqual(0);
+  });
+
   it("tracks thrown errors using a passed function", async () => {
     // eslint-disable-next-line prefer-const
     let errors: unknown[] = [];
@@ -41,7 +64,13 @@ describe("fetchDomainBlocklist", () => {
     const apiConfig = {
       domainBlocklistUrl: "http://2CeaMJtzCTdx8ht2.com/", // this domain does not exist
     };
-    await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
+    await fetchDomainBlocklist(
+      apiConfig,
+      undefined,
+      undefined,
+      undefined,
+      reportError
+    );
     expect(errors.length).toBe(1);
     expect((errors[0] as Error).message).toBe(
       "request to http://2ceamjtzctdx8ht2.com/ failed, reason: getaddrinfo ENOTFOUND 2ceamjtzctdx8ht2.com"
@@ -57,7 +86,13 @@ describe("fetchDomainBlocklist", () => {
     const apiConfig = {
       domainBlocklistUrl: "https://google.com/fdjfkdkdkfdkdf/", // this should return 404
     };
-    await fetchDomainBlocklist(apiConfig, undefined, undefined, reportError);
+    await fetchDomainBlocklist(
+      apiConfig,
+      undefined,
+      undefined,
+      undefined,
+      reportError
+    );
     expect(errors.length).toBe(1);
     expect(errors[0] as string).toContain("Error 404 (Not Found)");
   });
