@@ -14,6 +14,7 @@ export type DomainBlocklist = {
   bloomFilter: { url: string; hash: string };
   recentlyAdded: string[];
   recentlyRemoved: string[];
+  nextCursor: string;
 };
 
 export type BloomFilter = {
