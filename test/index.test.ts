@@ -32,7 +32,7 @@ describe("fetchDomainBlocklist", () => {
     expect(blocklist!.bloomFilter.hash).not.toBe("");
   });
 
-  it.only("should return a cursor that can be used to re-fetch the blocklist", async () => {
+  it("should return a cursor that can be used to re-fetch the blocklist", async () => {
     const apiConfig = {
       domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
       apiKey: process.env.BLOWFISH_API_KEY,
