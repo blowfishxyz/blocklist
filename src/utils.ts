@@ -103,7 +103,10 @@ export function scanDomain(
   recentlyRemoved: string[],
   url: string
 ): Action {
-  const domain = new URL(url).hostname.toLowerCase();
+  // Take domain hostname without trailing dots at the end, which are often ignored
+  // by browsers.
+  const domain = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
+
   const domainParts = domain.split(".");
   // Lookup all possible subdomains.
   // E.g. for abc.cde.google.com, we'll lookup: abc.cde.google.com, cde.google.com, google.com

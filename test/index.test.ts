@@ -165,6 +165,20 @@ describe("scanDomain", () => {
     ).toBe("BLOCK");
   });
 
+  it("should return a block action when blocked domain is passed with a dot", () => {
+    expect(
+      scanDomain(EMPTY_BLOOM_FILTER, ["google.com"], [], "https://google.com.")
+    ).toBe("BLOCK");
+    expect(
+      scanDomain(
+        EMPTY_BLOOM_FILTER,
+        ["google.com"],
+        [],
+        "https://www.google.com."
+      )
+    ).toBe("BLOCK");
+  });
+
   it("should return a none action when domain is not in the recent list", () => {
     expect(
       scanDomain(EMPTY_BLOOM_FILTER, [], [], "https://www.google.com")
