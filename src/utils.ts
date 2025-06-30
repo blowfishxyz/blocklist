@@ -103,7 +103,7 @@ export function scanDomain(
   recentlyRemoved: string[],
   url: string
 ): Action {
-  // Take domain hostname without trailing dots at the end, which are often ignored
+  // Take domain hostname without trailing dot at the end, which is often ignored
   // by browsers.
   const domain = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
 
