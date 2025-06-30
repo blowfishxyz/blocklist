@@ -4,7 +4,6 @@ import {
   fetchDomainBlocklistBloomFilter,
   scanDomain,
   BloomFilter,
-  DEFAULT_BLOCKLIST_URL,
 } from "../src/utils";
 
 const EMPTY_BLOOM_FILTER: BloomFilter = {
@@ -15,10 +14,10 @@ const EMPTY_BLOOM_FILTER: BloomFilter = {
   salt: "",
 };
 
-describe.skip("fetchDomainBlocklist", () => {
+describe("fetchDomainBlocklist", () => {
   it("should return a non-null blocklist fetched from API with required fields", async () => {
     const apiConfig = {
-      domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
+      domainBlocklistUrl: process.env.BLOWFISH_BASE_URL!,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
     const blocklist = await fetchDomainBlocklist(apiConfig);
@@ -34,7 +33,7 @@ describe.skip("fetchDomainBlocklist", () => {
 
   it("should return a cursor that can be used to re-fetch the blocklist", async () => {
     const apiConfig = {
-      domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
+      domainBlocklistUrl: process.env.BLOWFISH_BASE_URL!,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
     const blocklist = await fetchDomainBlocklist(apiConfig);
@@ -98,10 +97,10 @@ describe.skip("fetchDomainBlocklist", () => {
   });
 });
 
-describe.skip("fetchDomainBlocklistBloomFilter", () => {
+describe("fetchDomainBlocklistBloomFilter", () => {
   it("should return a bloom filter object from url in blocklist object", async () => {
     const apiConfig = {
-      domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
+      domainBlocklistUrl: process.env.BLOWFISH_BASE_URL!,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
     const blocklist = await fetchDomainBlocklist(apiConfig);
@@ -315,9 +314,9 @@ describe("scanDomain", () => {
     ).toBe("NONE");
   });
 
-  it.skip("should return actions for domain in bloom filter from API", async () => {
+  it("should return actions for domain in bloom filter from API", async () => {
     const apiConfig = {
-      domainBlocklistUrl: DEFAULT_BLOCKLIST_URL,
+      domainBlocklistUrl: process.env.BLOWFISH_BASE_URL!,
       apiKey: process.env.BLOWFISH_API_KEY,
     };
     const blocklist = await fetchDomainBlocklist(apiConfig);
