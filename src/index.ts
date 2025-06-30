@@ -1,21 +1,7 @@
-export type {
-  ApiConfig,
-  BloomFilter,
-  DomainBlocklist,
-  PriorityAllowListsEnum,
-  PriorityBlockListsEnum,
-  BlockListsEnum,
-  AllowListsEnum,
-  BlowfishBlocklistStorage,
-} from "./types";
+export type { ApiConfig, BloomFilter, DomainBlocklist } from "./types";
 export type { ErrorCallback } from "./utils";
 
-export {
-  Action,
-  BLOWFISH_API_BASE_URL,
-  BlowfishBlocklistStorageKey,
-} from "./types";
-export { BlowfishLocalBlocklist } from "./blowfishLocalBlocklist";
+export { Action, BLOWFISH_API_BASE_URL } from "./types";
 
 export {
   scanDomain,
