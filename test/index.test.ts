@@ -14,7 +14,7 @@ const EMPTY_BLOOM_FILTER: BloomFilter = {
   salt: "",
 };
 
-const BLOCKLIST_ENDPOINT = 'v0/domains/blocklist';
+const BLOCKLIST_ENDPOINT = "v0/domains/blocklist";
 
 describe("fetchDomainBlocklist", () => {
   it("should return a non-null blocklist fetched from API with required fields", async () => {
