@@ -16,6 +16,9 @@ export type ErrorCallback = (error: unknown) => void;
 export const fetcher =
   typeof self !== "undefined" && !!self.fetch ? self.fetch : fetch;
 
+// API version to be passed in the request to blocklist API.
+const API_VERSION = "2023-06-05";
+
 // Fetch blocklist JSON object from Blowfish API with link to bloom filter and recent domains.
 //
 // Blocklist should be fetched/updated in two steps.
@@ -39,6 +42,7 @@ export async function fetchDomainBlocklist(
 ): Promise<DomainBlocklist | null> {
   const headers = {
     "Content-Type": "application/json",
+    "X-Api-Version": API_VERSION,
   };
   const apiKeyConfig = apiConfig.apiKey
     ? { headers: { "x-api-key": apiConfig.apiKey, ...headers } }
