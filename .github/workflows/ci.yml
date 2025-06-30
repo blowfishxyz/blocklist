@@ -26,3 +26,4 @@ jobs:
         run: pnpm run test
         env:
           BLOWFISH_API_KEY: ${{ secrets.BLOWFISH_API_KEY }}
+          BLOWFISH_BASE_URL: ${{ secrets.BLOWFISH_BASE_URL }}
