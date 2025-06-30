@@ -55,6 +55,7 @@ export async function fetchDomainBlocklist(
       ...apiKeyConfig,
     });
     if (!response.ok) {
+      console.log(await response.text()); // FIXME
       if (reportError) {
         reportError(await response.text());
       }
