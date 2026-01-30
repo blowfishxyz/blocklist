@@ -3,6 +3,7 @@ import {
   fetchDomainBlocklist,
   fetchDomainBlocklistBloomFilter,
   scanDomain,
+  scanDomainWithHostname,
   BloomFilter,
 } from "../src/utils";
 
@@ -341,5 +342,76 @@ describe("scanDomain", () => {
         "https://-magiceden.io"
       )
     ).toBe("BLOCK");
+  });
+});
+
+describe("scanDomainWithHostname", () => {
+  it("should return the hostname that triggered the block from recent list", () => {
+    const result = scanDomainWithHostname(
+      EMPTY_BLOOM_FILTER,
+      ["google.com"],
+      [],
+      "https://www.google.com"
+    );
+    expect(result.action).toBe("BLOCK");
+    expect(result.hostname).toBe("google.com");
+  });
+
+  it("should return the exact subdomain that triggered the block", () => {
+    const result = scanDomainWithHostname(
+      EMPTY_BLOOM_FILTER,
+      ["app1.vercel.com"],
+      [],
+      "https://app1.vercel.com"
+    );
+    expect(result.action).toBe("BLOCK");
+    expect(result.hostname).toBe("app1.vercel.com");
+  });
+
+  it("should return null hostname when no block", () => {
+    const result = scanDomainWithHostname(
+      EMPTY_BLOOM_FILTER,
+      [],
+      [],
+      "https://www.google.com"
+    );
+    expect(result.action).toBe("NONE");
+    expect(result.hostname).toBeNull();
+  });
+
+  it("should return the hostname that triggered the block from bloom filter", () => {
+    const result = scanDomainWithHostname(
+      // This bloom filter contains the domain "google.com"
+      {
+        hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
+        bitVector: "AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        k: 1,
+        bits: 256,
+        salt: "abc",
+      },
+      [],
+      [],
+      "https://www.google.com"
+    );
+    expect(result.action).toBe("BLOCK");
+    expect(result.hostname).toBe("google.com");
+  });
+
+  it("should return null hostname when domain is in bloom filter but also in recently removed list", () => {
+    const result = scanDomainWithHostname(
+      // This bloom filter contains the domain "google.com"
+      {
+        hash: "39570c5c52ebe3f8b8cee74ffc29107189fc216f37e52d9eb7b13c613dad7e05",
+        bitVector: "AAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+        k: 1,
+        bits: 256,
+        salt: "abc",
+      },
+      [],
+      ["google.com"],
+      "https://google.com"
+    );
+    expect(result.action).toBe("NONE");
+    expect(result.hostname).toBeNull();
   });
 });

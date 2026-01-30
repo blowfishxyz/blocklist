@@ -1,5 +1,10 @@
 import fetch from "cross-fetch";
-import { Action, BloomFilter, DomainBlocklist } from "./types";
+import {
+  Action,
+  BloomFilter,
+  DomainBlocklist,
+  ScanDomainResult,
+} from "./types";
 import { lookup } from "./bloomFilter";
 
 export type { BloomFilter, DomainBlocklist };
@@ -97,16 +102,13 @@ export async function fetchDomainBlocklistBloomFilter(
   }
 }
 
-// Scan if url's domain is blocked by the bloom filter or is contained in the "recent domains" list.
-//
-// This function does not implement any priority logic and considers any domain in the blocklist blocked.
-// `recentlyAdded` and `recentlyRemoved` have to be passed from stored blocklist object.
-export function scanDomain(
+// Scan if url's domain is blocked and return the hostname that triggered the block action.
+export function scanDomainWithHostname(
   bloomFilter: BloomFilter,
   recentlyAdded: string[],
   recentlyRemoved: string[],
   url: string
-): Action {
+): ScanDomainResult {
   // Take domain hostname without trailing dot at the end, which is often ignored
   // by browsers.
   const domain = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
@@ -118,16 +120,34 @@ export function scanDomain(
   for (let i = 0; i < domainParts.length - 1; i++) {
     const domainToLookup = domainParts.slice(i).join(".");
     if (recentlyAdded.includes(domainToLookup)) {
-      return Action.BLOCK;
+      return { action: Action.BLOCK, hostname: domainToLookup };
     }
     if (
       lookup(bloomFilter, domainToLookup) &&
       !recentlyRemoved.includes(domainToLookup)
     ) {
-      return Action.BLOCK;
+      return { action: Action.BLOCK, hostname: domainToLookup };
     }
   }
-  return Action.NONE;
+  return { action: Action.NONE, hostname: null };
+}
+
+// Scan if url's domain is blocked by the bloom filter or is contained in the "recent domains" list.
+//
+// This function does not implement any priority logic and considers any domain in the blocklist blocked.
+// `recentlyAdded` and `recentlyRemoved` have to be passed from stored blocklist object.
+export function scanDomain(
+  bloomFilter: BloomFilter,
+  recentlyAdded: string[],
+  recentlyRemoved: string[],
+  url: string
+): Action {
+  return scanDomainWithHostname(
+    bloomFilter,
+    recentlyAdded,
+    recentlyRemoved,
+    url
+  ).action;
 }
 
 export const withRetry = async <T>(

@@ -23,4 +23,8 @@ export enum Action {
   NONE = "NONE",
 }
 
+export type ScanDomainResult =
+  | { action: Action.BLOCK; hostname: string }
+  | { action: Action.NONE; hostname: null };
+
 export const BLOWFISH_API_BASE_URL = "https://api.blowfish.xyz";
