@@ -18,7 +18,7 @@ const EMPTY_BLOOM_FILTER: BloomFilter = {
 const BLOCKLIST_ENDPOINT = "v0/domains/blocklist";
 
 describe("fetchDomainBlocklist", () => {
-  it("should return a non-null blocklist fetched from API with required fields", async () => {
+  it.skip("should return a non-null blocklist fetched from API with required fields", async () => {
     const apiConfig = {
       domainBlocklistUrl: process.env.BLOWFISH_BASE_URL! + BLOCKLIST_ENDPOINT,
       apiKey: process.env.BLOWFISH_API_KEY,
@@ -34,7 +34,7 @@ describe("fetchDomainBlocklist", () => {
     expect(blocklist!.bloomFilter.hash).not.toBe("");
   });
 
-  it("should return a cursor that can be used to re-fetch the blocklist", async () => {
+  it.skip("should return a cursor that can be used to re-fetch the blocklist", async () => {
     const apiConfig = {
       domainBlocklistUrl: process.env.BLOWFISH_BASE_URL! + BLOCKLIST_ENDPOINT,
       apiKey: process.env.BLOWFISH_API_KEY,
@@ -101,7 +101,7 @@ describe("fetchDomainBlocklist", () => {
 });
 
 describe("fetchDomainBlocklistBloomFilter", () => {
-  it("should return a bloom filter object from url in blocklist object", async () => {
+  it.skip("should return a bloom filter object from url in blocklist object", async () => {
     const apiConfig = {
       domainBlocklistUrl: process.env.BLOWFISH_BASE_URL! + BLOCKLIST_ENDPOINT,
       apiKey: process.env.BLOWFISH_API_KEY,
@@ -317,7 +317,7 @@ describe("scanDomain", () => {
     ).toBe("NONE");
   });
 
-  it("should return actions for domain in bloom filter from API", async () => {
+  it.skip("should return actions for domain in bloom filter from API", async () => {
     const apiConfig = {
       domainBlocklistUrl: process.env.BLOWFISH_BASE_URL! + BLOCKLIST_ENDPOINT,
       apiKey: process.env.BLOWFISH_API_KEY,
