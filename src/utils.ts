@@ -109,9 +109,9 @@ export function scanDomainWithHostname(
   recentlyRemoved: string[],
   url: string
 ): ScanDomainResult {
-  // Take domain hostname without trailing dot at the end, which is often ignored
-  // by browsers.
-  const domain = new URL(url).hostname.toLowerCase().replace(/\.$/, "");
+  // Take domain hostname without boundary dots, which are often ignored by
+  // browsers.
+  const domain = new URL(url).hostname.toLowerCase().replace(/^\.+|\.+$/g, "");
 
   const domainParts = domain.split(".");
   // Lookup all possible subdomains.
