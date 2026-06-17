@@ -368,6 +368,17 @@ describe("scanDomainWithHostname", () => {
     expect(result.hostname).toBe("app1.vercel.com");
   });
 
+  it("should ignore leading and trailing hostname dots", () => {
+    const result = scanDomainWithHostname(
+      EMPTY_BLOOM_FILTER,
+      ["google.com"],
+      [],
+      "https://..google.com."
+    );
+    expect(result.action).toBe("BLOCK");
+    expect(result.hostname).toBe("google.com");
+  });
+
   it("should return null hostname when no block", () => {
     const result = scanDomainWithHostname(
       EMPTY_BLOOM_FILTER,
